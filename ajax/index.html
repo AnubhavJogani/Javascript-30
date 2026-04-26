@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Type Ahead 👀</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="https://fav.farm/🔥" />
+  </head>
+  <body>
+    <form class="search-form">
+      <input type="text" class="search" placeholder="City or State" />
+      <ul class="suggestions">
+        <li>Filter for a city</li>
+        <li>or a state</li>
+      </ul>
+    </form>
+    <script>
+      function highlight(content, value) {
+        const regex = new RegExp(value, 'gi');
+        return content.replace(regex, `<span class="hl">${value}</span>`);
+      }
+      function displayMatchs(e) {
+        const match = userChange(this.value, list);
+        const html = match
+          .map((place) => {
+            return `
+                <li>
+                    <span class="name">${highlight(place.city, this.value)}, ${highlight(place.state, this.value) }</span>
+                    <span class="population">${place.populatuion}</span>
+                </li>`;
+          })
+          .join("");
+        document.querySelector(".suggestions").innerHTML = html;
+      }
+      function userChange(wordToMatch, cities) {
+        const q = new RegExp(wordToMatch, "gi");
+        const filteredList = list.filter(
+          (item) => item.city.match(q) || item.state.match(q),
+        );
+        return filteredList;
+      }
+      const endpoint =
+        "https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json";
+
+      const list = [];
+      fetch(endpoint)
+        .then((res) => res.json())
+        .then((res) => list.push(...res));
+
+      document
+        .querySelector(".search")
+        .addEventListener("keyup", displayMatchs);
+    </script>
+  </body>
+</html>
